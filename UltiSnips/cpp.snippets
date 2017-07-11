@@ -1,0 +1,17 @@
+snippet lookupTransform "try/catch guarded lookup"
+tf::StampedTransform stamped_transform;
+try{
+  ${1:tf_listener}${2:.}waitForTransform(${3:parent},
+      ${4:child},
+      ros::Time(0),
+      ros::Duration(4.0));
+  $1$2lookupTransform($3,
+      $4,
+      ros::Time(0),
+      stamped_transform);
+}
+catch (tf::TransformException ex){
+  ROS_ERROR("TF lookup error error: %s",ex.what());
+}
+endsnippet
+

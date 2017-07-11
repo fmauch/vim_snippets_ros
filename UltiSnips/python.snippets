@@ -1,0 +1,22 @@
+snippet ros_main_node
+import rospy
+
+
+class ${1:ClassName}:
+    """Add node description here"""
+
+    def __init__(self):
+	rospy.init_node('${2:NodeName}')
+	rospy.spin()
+
+if __name__ == '__main__':
+    $1()
+endsnippet
+
+snippet tf-lookup
+try:
+    (trans,rot) = ${1:tf_listener}.lookupTransform('${2:target_frame}', '${3:source_frame}', rospy.Time(0))
+except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
+    rospy.logerr('An error occured while looking up tansform: {}'.format(e))
+endsnippet
+
