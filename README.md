@@ -8,5 +8,5 @@ For this to have any effect, you'll have to have the [UltiSnips](https://github.
 ### Installation
 Simply add this repository to your runtimepath inside your vimrc:
 ```
-set runtimepath+=~/dotfiles/vim_snippets
+set runtimepath+=~/dotfiles/vim_snippets_ros
 ```
