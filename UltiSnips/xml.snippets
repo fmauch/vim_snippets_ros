@@ -1,0 +1,30 @@
+snippet <arg "roslaunch argument"
+<arg name="${1:name}" default="${2:default}"/>
+endsnippet
+
+snippet <argcall "roslaunch argument with value"
+<arg name="${1:name}" value="${2:value}"/>
+endsnippet
+
+snippet <param "roslaunch param"
+<param name="${1:name}" value="${2:value}"/>
+endsnippet
+
+snippet <node "roslaunch node"
+<node name="${1:name}" pkg="${2:pkg}" type="${3:type}" respawn="${4:false}" output="${5:screen}">
+</node>
+endsnippet
+
+snippet <include "roslaunch include"
+<include file="\$(find ${1:package_name})/launch/${2:filename}">
+</include>
+endsnippet
+
+snippet <remap "roslaunch remap"
+<remap from="$1" to="$2" />
+endsnippet
+
+snippet launch-prefix-debug "roslaunch launch-prefix-debug"
+launch-prefix="xterm -e gdb -ex run --args"
+endsnippet
+
