@@ -1,3 +1,57 @@
+global !p
+import re
+import os
+
+def snakecase(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+def to_camel_case(name):
+    components = name.split('_')
+    return components[0] + "".join(x.title() for x in components[1:])
+
+def to_camel_case_first_title(name):
+    components = name.split('_')
+    return "".join(x.title() for x in components)
+
+def parameter_documentation(keys):
+    key_list = keys.split(',')
+    if len(key_list) == 0:
+        return ''
+    out_str = list()
+    for key in key_list:
+	out_str.append('    -- ' + key.strip().strip('\'') + ' type Documentation')
+    return "\n".join(out_str)
+
+def input_key_documentation(input_keys):
+    key_list = input_keys.split(',')
+    if len(key_list) == 0:
+        return ''
+    out_str = list()
+    for key in key_list:
+	out_str.append('    ># ' + key.strip().strip('\'') + ' type Documentation')
+    return "\n".join(out_str)
+
+def output_key_documentation(keys):
+    key_list = keys.split(',')
+    if len(key_list) == 0:
+        return ''
+    out_str = list()
+    for key in key_list:
+	out_str.append('    #> ' + key.strip().strip('\'') + ' type Documentation')
+    return "\n".join(out_str)
+
+def outcome_documentation(outcomes):
+    key_list = outcomes.split(',')
+    if len(key_list) == 0:
+        return ''
+    out_str = list()
+    for key in key_list:
+	out_str.append('    <= ' + key.strip().strip('\'') + ' type Documentation')
+    return "\n".join(out_str)
+
+endglobal
+
 snippet ros_main_node
 import rospy
 
@@ -20,3 +74,104 @@ except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException)
     rospy.logerr('An error occured while looking up tansform: {}'.format(e))
 endsnippet
 
+
+snippet flexbe_state
+#!/usr/bin/env python
+'''
+This file contains the flexbe state `!p snip.rv = to_camel_case_first_title(os.path.splitext(fn)[0])`
+'''
+
+from flexbe_core import EventState, Logger
+
+
+class `!p snip.rv = to_camel_case_first_title(os.path.splitext(fn)[0])`(EventState):
+    '''
+    TODO: Please add documetation here
+
+`!p snip.rv = parameter_documentation(t[4])`
+
+`!p snip.rv = input_key_documentation(t[2])`
+`!p snip.rv = output_key_documentation(t[3])`
+
+`!p snip.rv = outcome_documentation(t[1])`
+
+    '''
+
+    def __init__(self, ${4}):
+        super(`!p snip.rv = to_camel_case_first_title(os.path.splitext(fn)[0])`, self).__init__(
+	    outcomes=[${1:outcomes}],
+            input_keys=[${2: input_keys}],
+            output_keys=[${3: output_keys}]
+        )
+
+
+    def execute(self, userdata):
+        '''
+        Fill this with the code that should be executed cyclically after entering
+        '''
+	pass
+
+    def on_enter(self, userdata):
+        '''
+        Code inside this function is evaluated once at entry
+        '''
+	pass
+endsnippet
+
+#snippet flexbe_service_state
+##!/usr/bin/env python
+#import rospy
+
+#from flexbe_core import EventState, Logger
+#from flexbe_core.proxy import ProxyServiceCaller
+
+#from ${1:ros_package}.srv import ${2:type}, ${2:type}Request
+
+
+#class `!p snip.rv = to_camel_case_first_title(fn)`(EventState):
+  #'''
+  #State that calls the ${1:ros_package}/${2:type} service
+
+  #-- ${3:service_topic} string The service url
+
+#`!p snip.rv = input_key_documentation(t[4])`
+  ##> service_response object The service's response
+  
+  #<= succeeded The service call succeeded
+  #<= failed    The service call failed
+
+  #'''
+
+  #def __init__(self, ${3:service_topic}):
+    #super(`!p snip.rv = to_camel_case_first_title(fn)`).__init__(
+      #outcomes=['succeeded', 'failed'],
+      #input_keys=[${4:input_keys}],
+      #output_keys=['service_response']
+    #)
+
+    #self.service_name = ${3:service_topic}
+    #self.service_client = ProxyServiceCaller({self.service_name: ${2:type}})
+    
+    #self.error = False
+
+  #def execute(self, userdata):
+    ## All the work is already done during on_enter. Let's just return the outcome
+    #if self.error:
+      #return 'failed'
+    #else:
+      #return 'succeeded'
+
+  #def on_enter(self, userdata):
+    #request = ${2:type}Request()
+
+    ## TODO: Fill request with userdata
+    #${0}
+
+    #try:
+      #response = self.service_client.call(self.service_name, request)
+      #userdata.service_response = response
+    #except Exception as e:
+      #Logger.logerr(e)
+      #Logger.logerr('Error while sending the service request.')
+      #self.error = True
+#endsnippet flexbe_service_state
