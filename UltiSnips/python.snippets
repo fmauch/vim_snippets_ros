@@ -20,7 +20,7 @@ def parameter_documentation(keys):
         return ''
     out_str = list()
     for key in key_list:
-	out_str.append('    -- ' + key.strip().strip('\'') + ' type Documentation')
+        out_str.append('    -- ' + key.strip().strip('\'') + ' type Documentation')
     return "\n".join(out_str)
 
 def input_key_documentation(input_keys):
@@ -29,7 +29,7 @@ def input_key_documentation(input_keys):
         return ''
     out_str = list()
     for key in key_list:
-	out_str.append('    ># ' + key.strip().strip('\'') + ' type Documentation')
+        out_str.append('    ># ' + key.strip().strip('\'') + ' type Documentation')
     return "\n".join(out_str)
 
 def output_key_documentation(keys):
@@ -38,7 +38,7 @@ def output_key_documentation(keys):
         return ''
     out_str = list()
     for key in key_list:
-	out_str.append('    #> ' + key.strip().strip('\'') + ' type Documentation')
+        out_str.append('    #> ' + key.strip().strip('\'') + ' type Documentation')
     return "\n".join(out_str)
 
 def outcome_documentation(outcomes):
@@ -47,7 +47,7 @@ def outcome_documentation(outcomes):
         return ''
     out_str = list()
     for key in key_list:
-	out_str.append('    <= ' + key.strip().strip('\'') + ' type Documentation')
+        out_str.append('    <= ' + key.strip().strip('\'') + ' type Documentation')
     return "\n".join(out_str)
 
 endglobal
@@ -99,7 +99,7 @@ class `!p snip.rv = to_camel_case_first_title(os.path.splitext(fn)[0])`(EventSta
 
     def __init__(self, ${4}):
         super(`!p snip.rv = to_camel_case_first_title(os.path.splitext(fn)[0])`, self).__init__(
-	    outcomes=[${1:outcomes}],
+            outcomes=[${1:outcomes}],
             input_keys=[${2: input_keys}],
             output_keys=[${3: output_keys}]
         )
@@ -109,13 +109,13 @@ class `!p snip.rv = to_camel_case_first_title(os.path.splitext(fn)[0])`(EventSta
         '''
         Fill this with the code that should be executed cyclically after entering
         '''
-	pass
+        pass
 
     def on_enter(self, userdata):
         '''
         Code inside this function is evaluated once at entry
         '''
-	pass
+        pass
 endsnippet
 
 #snippet flexbe_service_state
@@ -136,7 +136,7 @@ endsnippet
 
 #`!p snip.rv = input_key_documentation(t[4])`
   ##> service_response object The service's response
-  
+
   #<= succeeded The service call succeeded
   #<= failed    The service call failed
 
@@ -151,7 +151,7 @@ endsnippet
 
     #self.service_name = ${3:service_topic}
     #self.service_client = ProxyServiceCaller({self.service_name: ${2:type}})
-    
+
     #self.error = False
 
   #def execute(self, userdata):
