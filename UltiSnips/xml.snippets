@@ -28,3 +28,22 @@ snippet launch-prefix-debug "roslaunch launch-prefix-debug"
 launch-prefix="xterm -e gdb -ex run --args"
 endsnippet
 
+snippet <link "robot link"
+<link name="${1:name}">
+  <visual>
+    <origin xyz="${2:0 0 0}" rpy="${3:0 0 0}"/>
+    <geometry>
+      <mesh filename="package://${4:my_package}/description/meshes/${5:my_mesh.dae}"
+            scale="${6:1 1 1}"/>
+    </geometry>
+  </visual>
+</link>
+endsnippet
+
+snippet <joint "robot_joint"
+<joint name="${1:joint_name}" type="${2:fixed}">
+  <parent link="${3:world}" />
+  <child link = "${4:child_link}" />
+  <origin xyz="${5:0 0 0}" rpy="${6:0 0 0}" />
+</joint>
+endsnippet
