@@ -56,12 +56,12 @@ snippet ros_main_node
 import rospy
 
 
-class ${1:ClassName}:
-    """Add node description here"""
+class ${1:ClassName}(object):
+    """${2:Add node description here}"""
 
     def __init__(self):
-	rospy.init_node('${2:NodeName}')
-	rospy.spin()
+        rospy.init_node('${3:NodeName}')
+        rospy.spin()
 
 if __name__ == '__main__':
     $1()
