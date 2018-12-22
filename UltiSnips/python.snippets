@@ -133,60 +133,157 @@ class `!p snip.rv = to_camel_case_first_title(os.path.splitext(fn)[0])`(EventSta
         pass
 endsnippet
 
-#snippet flexbe_service_state
-##!/usr/bin/env python
-#import rospy
+snippet flexbe_service_state
+#!/usr/bin/env python
+import rospy
 
-#from flexbe_core import EventState, Logger
-#from flexbe_core.proxy import ProxyServiceCaller
+from flexbe_core import EventState, Logger
+from flexbe_core.proxy import ProxyServiceCaller
 
-#from ${1:ros_package}.srv import ${2:type}, ${2:type}Request
+from ${1:ros_package}.srv import ${2:type}, $2Request
 
 
-#class `!p snip.rv = to_camel_case_first_title(fn)`(EventState):
-  #'''
-  #State that calls the ${1:ros_package}/${2:type} service
+class `!p snip.rv = to_camel_case_first_title(fn)`(EventState):
+    '''
+    State that calls the $1/$2 service
 
-  #-- ${3:service_topic} string The service url
+    -- ${3:service_topic} string The service url
 
-#`!p snip.rv = input_key_documentation(t[4])`
-  ##> service_response object The service's response
+`!p snip.rv = input_key_documentation(t[4])`
+    #> service_response object The service's response
 
-  #<= succeeded The service call succeeded
-  #<= failed    The service call failed
+    <= succeeded The service call succeeded
+    <= failed    The service call failed
 
-  #'''
+    '''
 
-  #def __init__(self, ${3:service_topic}):
-    #super(`!p snip.rv = to_camel_case_first_title(fn)`).__init__(
-      #outcomes=['succeeded', 'failed'],
-      #input_keys=[${4:input_keys}],
-      #output_keys=['service_response']
-    #)
+    def __init__(self, $3):
+        super(`!p snip.rv=to_camel_case_first_title(fn)`).__init__(
+            outcomes=['succeeded', 'failed'],
+            input_keys=[${4:input_keys}],
+            output_keys=['service_response']
+        )
 
-    #self.service_name = ${3:service_topic}
-    #self.service_client = ProxyServiceCaller({self.service_name: ${2:type}})
+        self.service_name = $3
+        self.service_client = ProxyServiceCaller({self.service_name: $2})
 
-    #self.error = False
+        self.error = False
 
-  #def execute(self, userdata):
-    ## All the work is already done during on_enter. Let's just return the outcome
-    #if self.error:
-      #return 'failed'
-    #else:
-      #return 'succeeded'
+    def execute(self, userdata):
+        # All the work is already done during on_enter. Let's just return the outcome
+        if self.error:
+            return 'failed'
+        else:
+            return 'succeeded'
 
-  #def on_enter(self, userdata):
-    #request = ${2:type}Request()
+    def on_enter(self, userdata):
+        request = $2Request()
 
-    ## TODO: Fill request with userdata
-    #${0}
+        # TODO: Fill request with userdata
+        $0
 
-    #try:
-      #response = self.service_client.call(self.service_name, request)
-      #userdata.service_response = response
-    #except Exception as e:
-      #Logger.logerr(e)
-      #Logger.logerr('Error while sending the service request.')
-      #self.error = True
-#endsnippet flexbe_service_state
+        try:
+            response = self.service_client.call(self.service_name, request)
+            userdata.service_response = response
+        except Exception as e:
+            Logger.logerr(e)
+            Logger.logerr('Error while sending the service request.')
+            self.error = True
+endsnippet
+
+snippet flexbe_action_state
+#!/usr/bin/env python
+from flexbe_core import EventState, Logger
+from flexbe_core.proxy import ProxyActionClient
+
+from ${1:ros_package}.msg import ${2:type}Action, $2Goal
+
+
+class ExampleActionState(EventState):
+    '''
+    State that calls the $1/$2 action
+
+    -- ${3:action_namespace} string The action url
+
+`!p snip.rv = input_key_documentation(t[4])`
+    #> action_result object The action's result
+
+    <= succeeded The action call succeeded
+    <= preempted The action call was preempted
+    <= aborted   The action call failed
+    '''
+
+  def __init__(self, $3):
+        super(`!p snip.rv=to_camel_case_first_title(fn)`).__init__(
+            outcomes=['succeeded', 'preempted', 'aborted'],
+            input_keys=[${4:input_keys}],
+            output_keys=['action_result']
+        )
+
+        # Create the action client when building the behavior.
+        # This will cause the behavior to wait for the client before starting execution
+        # and will trigger a timeout error if it is not available.
+        # Using the proxy client provides asynchronous access to the result and status
+        # and makes sure only one client is used, no matter how often this state
+        # is used in a behavior.
+        self._topic = $3
+        # pass required clients as dict (topic: type)
+        self._client = ProxyActionClient({self._topic: $2Action})
+
+        # It may happen that the action client fails to send the action goal.
+        self._error = False
+
+    def execute(self, userdata):
+        # While this state is active, check if the action has been finished and
+        # Check if the client failed to send the goal.
+        if self._error:
+            #Logger.logwarn('ABORTED!!!')
+            return 'aborted'
+
+        # Check if the action has been finished
+        if self._client.has_result(self._cartesian_action_server):
+            status = self._client.get_state(self._cartesian_action_server)
+	    userdata['action_result'] = self._client.get_result()
+            if status == GoalStatus.SUCCEEDED:
+                return 'succeeded'
+            elif status == GoalStatus.PREEMPTED:
+                Logger.loginfo('Action was preempted')
+                return 'preempted'
+            elif status in [GoalStatus.PREEMPTED, GoalStatus.REJECTED, GoalStatus.RECALLED, GoalStatus.ABORTED]:
+                Logger.logwarn('Action failed: %s' % str(status))
+                return 'aborted'
+        # evaluate the result.
+
+        # If the action has not yet finished, no outcome will be returned and the
+        # state stays active.
+
+
+    def on_enter(self, userdata):
+        # When entering this state, we send the action goal once to let the robot start its work.
+
+        # Create the goal.
+        goal = $2Goal()
+
+	# TODO: Fill the goal
+	$0
+
+        # Send the goal.
+        self._error = False  # make sure to reset the error state since a previous state execution might have failed
+        try:
+            self._client.send_goal(self._topic, goal)
+        except Exception as e:
+            # Since a state failure not necessarily causes a behavior failure, it is recommended to only print warnings, not errors.
+            # Using a linebreak before appending the error log enables the operator to
+            # collapse details in the GUI.
+            Logger.logwarn('Failed to send the action command:\n%s' % str(e))
+            self._error = True
+
+    def on_exit(self, userdata):
+        # Make sure that the action is not running when leaving this state.
+        # A situation where the action would still be active is for example when
+        # the operator manually triggers an outcome.
+
+        if not self._client.has_result(self._topic):
+            self._client.cancel(self._topic)
+            Logger.loginfo('Cancelled active action goal.')
+endsnippet
