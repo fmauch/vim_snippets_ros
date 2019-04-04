@@ -6,7 +6,9 @@ This repository contains UltiSnips that get quite useful when working with ROS. 
 For this to have any effect, you'll have to have the [UltiSnips](https://github.com/SirVer/ultisnips) package installed.
 
 ### Installation
-Simply add this repository to your runtimepath inside your vimrc:
+Use a package manager such as [vim-plug](https://github.com/junegunn/vim-plug) and add the package
+to your `~/.vimrc`:
+
 ```
-set runtimepath+=~/dotfiles/vim_snippets_ros
+Plug 'fmauch/vim_snippets_ros'
 ```
