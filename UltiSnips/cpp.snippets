@@ -18,3 +18,16 @@ endsnippet
 snippet logr "ROS_INFO_STREAM"
 ROS_${2:INFO}_STREAM(${1});
 endsnippet
+
+snippet ros_main "Main function for a ROS node"
+int main(int argc, char **argv)
+{
+  // Set up ROS.
+  ros::init(argc, argv, "${1:`!p snip.rv = snip.basename or "name"`}");
+  ros::NodeHandle nh;
+  ros::NodeHandle priv_nh("~");
+
+  ros::spin();
+  return 0;
+}
+endsnippet
